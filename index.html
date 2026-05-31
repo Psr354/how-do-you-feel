@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How Do You Feel?</title>
+    <meta name="theme-color" content="#102431" />
+    <meta
+      name="description"
+      content="How Do You Feel? membantu menjembatani keluhan dengan titik akupuntur, meridian, dan atlas tubuh interaktif."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="points-data.js"></script>
+    <script src="atlas-data.js"></script>
+    <script src="search-engine.js"></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">How Do You Feel?</p>
+          <h1>How do you feel?</h1>
+          <p class="hero-text">
+            Web ini memadukan dataset titik akupuntur dari workbook dengan struktur atlas dari
+            <strong>The Meridian</strong>: hasil pencarian, filter meridian, panel detail titik,
+            dan peta tubuh berlapis.
+          </p>
+          <div class="hero-pills" aria-label="Kapabilitas utama">
+            <span>Search berbobot</span>
+            <span>Meridian explorer</span>
+            <span>Atlas tubuh interaktif</span>
+          </div>
+        </div>
+
+        <form id="search-form" class="search-panel">
+          <label class="search-label" for="complaint-input">Tell me how you feel</label>
+          <div class="search-row">
+            <input
+              id="complaint-input"
+              name="complaint"
+              type="search"
+              autocomplete="off"
+              list="search-suggestions"
+              placeholder="Tell me how you feel"
+            />
+            <button type="submit">Explore</button>
+          </div>
+          <p class="search-note">
+            Query bisa multi-keluhan dan berbobot. Contoh:
+            <span>maag^2 + mual + cemas</span> atau <span>susah tidur + pusing</span>.
+          </p>
+          <div id="quick-searches" class="quick-searches" aria-label="Contoh query"></div>
+          <div class="search-toolbar">
+            <div id="search-actions" class="search-actions">
+              <button type="button" class="ghost-btn" data-app-action="reset">Reset</button>
+              <button type="button" class="ghost-btn" data-app-action="share">Bagikan link</button>
+              <button type="button" class="ghost-btn" data-app-action="copy-summary">Salin ringkasan</button>
+            </div>
+            <p id="action-feedback" class="muted-note action-feedback" aria-live="polite"></p>
+          </div>
+          <div class="recent-block">
+            <p class="search-label subtle-label">Pencarian terakhir</p>
+            <div id="recent-searches" class="quick-searches recent-searches"></div>
+          </div>
+          <datalist id="search-suggestions"></datalist>
+        </form>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <section class="info-card">
+            <h2>Basis Data</h2>
+            <div id="dataset-stats" class="stats-grid"></div>
+          </section>
+
+          <section class="info-card">
+            <h2>Atlas APK</h2>
+            <div id="atlas-summary"></div>
+            <div id="atlas-languages" class="mini-chip-row"></div>
+          </section>
+
+          <section class="info-card">
+            <h2>Katalog Meridian</h2>
+            <div id="meridian-catalog" class="catalog-list"></div>
+          </section>
+
+          <section class="info-card caution">
+            <h2>Catatan</h2>
+            <p>
+              Ini tetap alat bantu referensi, bukan keputusan klinis otomatis. Peta meridian di
+              web bersifat skematik, sementara layer atlas dan mesh keluarga meridian diturunkan
+              dari asset APK.
+            </p>
+          </section>
+        </aside>
+
+        <section class="results-panel">
+          <div class="results-head">
+            <div>
+              <p class="eyebrow">Explorer</p>
+              <h2 id="results-title">Mulai dari keluhan atau meridian</h2>
+            </div>
+            <p id="results-summary" class="results-summary">
+              Cari keluhan, atur bobot, filter meridian, lalu buka detail titik.
+            </p>
+          </div>
+
+          <section class="control-grid">
+            <article class="control-card">
+              <p class="eyebrow">Bobot Keluhan</p>
+              <div id="weight-editor"></div>
+            </article>
+
+            <article class="control-card">
+              <p class="eyebrow">Filter Meridian</p>
+              <div id="meridian-filters" class="filter-chip-row"></div>
+            </article>
+
+            <article class="control-card">
+              <p class="eyebrow">Layer Atlas</p>
+              <div id="layer-modes" class="filter-chip-row"></div>
+              <div id="atlas-focus"></div>
+            </article>
+          </section>
+
+          <section class="workspace-grid">
+            <section class="map-card">
+              <div class="map-copy">
+                <p class="eyebrow">Peta tubuh</p>
+                <h3>Permukaan, organ, atau meridian</h3>
+                <p id="body-map-summary" class="results-summary">
+                  Layer atlas akan berubah mengikuti mode yang dipilih.
+                </p>
+                <p id="query-insight" class="query-insight"></p>
+              </div>
+
+              <div id="body-map" class="body-map" aria-label="Peta tubuh interaktif"></div>
+              <div id="zone-pills" class="zone-pills"></div>
+            </section>
+
+            <div class="workspace-side">
+              <section id="treatment-plan" class="plan-panel"></section>
+              <section id="point-detail" class="detail-panel"></section>
+            </div>
+          </section>
+
+          <div id="results" class="results-grid">
+            <article class="empty-state">
+              <h3>Belum ada alur aktif</h3>
+              <p>
+                Mulai dari query seperti <strong>maag + mual</strong> atau klik satu meridian di
+                panel kiri untuk browse titik.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
