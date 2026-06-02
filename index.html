@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>How Do You Feel?</title>
-    <meta name="theme-color" content="#102431" />
+    <meta name="theme-color" content="#f8f4ec" />
     <meta
       name="description"
       content="How Do You Feel? membantu menjembatani keluhan dengan titik akupuntur, meridian, dan atlas tubuh interaktif."
@@ -28,14 +28,13 @@
           <p class="eyebrow">How Do You Feel?</p>
           <h1>How do you feel?</h1>
           <p class="hero-text">
-            Web ini memadukan dataset titik akupuntur dari workbook dengan struktur atlas dari
-            <strong>The Meridian</strong>: hasil pencarian, filter meridian, panel detail titik,
-            dan peta tubuh berlapis.
+            Tulis keluhan yang kamu rasakan. Web ini membantu menemukan titik akupuntur yang
+            berkaitan, lengkap dengan meridian, area tubuh, dan ringkasan titik prioritas.
           </p>
           <div class="hero-pills" aria-label="Kapabilitas utama">
-            <span>Search berbobot</span>
-            <span>Meridian explorer</span>
-            <span>Atlas tubuh interaktif</span>
+            <span>Bahasa sehari-hari</span>
+            <span>Peta tubuh</span>
+            <span>Detail titik</span>
           </div>
         </div>
 
@@ -50,11 +49,11 @@
               list="search-suggestions"
               placeholder="Tell me how you feel"
             />
-            <button type="submit">Explore</button>
+            <button type="submit">Cari</button>
           </div>
           <p class="search-note">
-            Query bisa multi-keluhan dan berbobot. Contoh:
-            <span>maag^2 + mual + cemas</span> atau <span>susah tidur + pusing</span>.
+            Bisa tulis satu atau beberapa keluhan sekaligus. Contoh:
+            <span>maag + mual + cemas</span> atau <span>susah tidur + pusing</span>.
           </p>
           <div id="quick-searches" class="quick-searches" aria-label="Contoh query"></div>
           <div class="search-toolbar">
@@ -96,7 +95,8 @@
             <p>
               Ini tetap alat bantu referensi, bukan keputusan klinis otomatis. Peta meridian di
               web bersifat skematik, sementara layer atlas dan mesh keluarga meridian diturunkan
-              dari asset APK.
+              dari asset APK. Label keamanan ditampilkan secara konservatif untuk menandai titik
+              yang sebaiknya tidak dicoba tanpa praktisi.
             </p>
           </section>
         </aside>
@@ -104,7 +104,7 @@
         <section class="results-panel">
           <div class="results-head">
             <div>
-              <p class="eyebrow">Explorer</p>
+              <p class="eyebrow">Panduan</p>
               <h2 id="results-title">Mulai dari keluhan atau meridian</h2>
             </div>
             <p id="results-summary" class="results-summary">

@@ -902,6 +902,215 @@ function formatScore(entry) {
   return state.query ? Math.round(entry.score) : null;
 }
 
+const PREGNANCY_CAUTION_CODES = new Set([
+  "LI4",
+  "SP6",
+  "BL60",
+  "BL67",
+  "GB21",
+  "CV3",
+  "CV4",
+  "CV5",
+  "CV6",
+  "CV7",
+  "CV8",
+  "BL31",
+  "BL32",
+  "BL33",
+  "BL34",
+]);
+
+const ADVANCED_POINT_CODES = new Set([
+  "BL1",
+  "ST1",
+  "GB1",
+  "ST9",
+  "CV22",
+  "GV15",
+  "GV16",
+  "GB20",
+  "BL10",
+  "LI18",
+  "SI16",
+  "SI17",
+  "TE16",
+]);
+
+const CHEST_POINT_CODES = new Set([
+  "LU1",
+  "LU2",
+  "ST12",
+  "ST13",
+  "ST14",
+  "ST15",
+  "ST16",
+  "KI22",
+  "KI23",
+  "KI24",
+  "KI25",
+  "KI26",
+  "KI27",
+  "CV17",
+]);
+
+const SAFETY_LEVEL_META = {
+  safe: { label: "Tidak ada peringatan khusus", rank: 0 },
+  caution: { label: "Hati-hati", rank: 1 },
+  advanced: { label: "Butuh skill khusus", rank: 2 },
+  avoid: { label: "Hindari kondisi tertentu", rank: 3 },
+};
+
+function addSafetyWarning(warnings, level, title, text) {
+  if (warnings.some((warning) => warning.title === title)) return;
+  warnings.push({ level, title, text });
+}
+
+function hasPointNumberBetween(point, min, max) {
+  const number = Number((point.code || "").match(/\d+/)?.[0]);
+  return Number.isFinite(number) && number >= min && number <= max;
+}
+
+function assessPointSafety(point) {
+  const warnings = [];
+  const code = point.code || "";
+  const family = pointFamilyKey(point);
+  const text = `${point.location || ""} ${point.indication || ""}`.toLowerCase();
+
+  if (PREGNANCY_CAUTION_CODES.has(code)) {
+    addSafetyWarning(
+      warnings,
+      "avoid",
+      "Perhatian kehamilan",
+      "Titik ini termasuk kelompok yang sering dihindari saat hamil kecuali ditangani praktisi terlatih."
+    );
+  }
+
+  if (ADVANCED_POINT_CODES.has(code)) {
+    addSafetyWarning(
+      warnings,
+      "advanced",
+      "Area sensitif",
+      "Lokasinya dekat struktur penting seperti mata, leher, tengkuk, atau pembuluh besar. Jangan digunakan untuk coba-coba."
+    );
+  }
+
+  if (CHEST_POINT_CODES.has(code) || point.mapZone === "torso") {
+    addSafetyWarning(
+      warnings,
+      "advanced",
+      "Area dada",
+      "Area dada dan sekitar paru membutuhkan arah serta kedalaman yang tepat. Risiko lebih tinggi bila dilakukan tanpa praktisi."
+    );
+  }
+
+  if (point.mapZone === "neck") {
+    addSafetyWarning(
+      warnings,
+      "advanced",
+      "Area leher",
+      "Leher berdekatan dengan pembuluh darah dan saraf penting. Titik ini sebaiknya hanya ditangani oleh praktisi."
+    );
+  }
+
+  if (point.mapZone === "abdomen" || point.mapZone === "pelvis" || family === "EX-CA") {
+    addSafetyWarning(
+      warnings,
+      "caution",
+      "Area perut atau panggul",
+      "Perlu skrining kondisi seperti kehamilan, operasi, hernia, perdarahan, atau nyeri akut sebelum tindakan."
+    );
+  }
+
+  if (point.mapZone === "back_upper" || point.mapZone === "back_lower" || family === "EX-B") {
+    addSafetyWarning(
+      warnings,
+      "caution",
+      "Area punggung",
+      "Punggung membutuhkan kontrol kedalaman dan arah tusuk, terutama dekat tulang belakang atau area organ dalam."
+    );
+  }
+
+  if (point.mapZone === "head") {
+    addSafetyWarning(
+      warnings,
+      "caution",
+      "Area kepala atau wajah",
+      "Area kepala dan wajah lebih sensitif. Hindari tindakan dekat mata, luka, infeksi, atau pembengkakan."
+    );
+  }
+
+  if (text.includes("arteri") || text.includes("nadi") || text.includes("radialis")) {
+    addSafetyWarning(
+      warnings,
+      "advanced",
+      "Dekat pembuluh darah",
+      "Lokasi menyebut arteri atau nadi. Penempatan yang salah dapat menimbulkan memar atau cedera pembuluh."
+    );
+  }
+
+  if (family === "CV" && hasPointNumberBetween(point, 2, 8)) {
+    addSafetyWarning(
+      warnings,
+      "caution",
+      "Garis tengah perut bawah",
+      "Titik CV bawah perlu kehati-hatian ekstra, terutama pada kehamilan, gangguan kemih, atau nyeri perut yang belum jelas."
+    );
+  }
+
+  const level = warnings.reduce(
+    (current, warning) =>
+      SAFETY_LEVEL_META[warning.level].rank > SAFETY_LEVEL_META[current].rank
+        ? warning.level
+        : current,
+    "safe"
+  );
+
+  return { level, warnings };
+}
+
+function renderSafetyBadge(point) {
+  const safety = assessPointSafety(point);
+  if (safety.level === "safe") return "";
+  return `<span class="badge safety-badge safety-${safety.level}">${SAFETY_LEVEL_META[safety.level].label}</span>`;
+}
+
+function renderSafetyPanel(point, compact = false) {
+  const safety = assessPointSafety(point);
+
+  if (!safety.warnings.length) {
+    return compact
+      ? ""
+      : `
+        <section class="safety-panel safety-safe">
+          <p class="result-label">Keamanan</p>
+          <p class="result-text">
+            Tidak ada peringatan khusus dari aturan konservatif aplikasi ini. Tetap gunakan sebagai referensi,
+            bukan instruksi tindakan mandiri.
+          </p>
+        </section>
+      `;
+  }
+
+  return `
+    <section class="safety-panel safety-${safety.level}">
+      <p class="result-label">Peringatan keamanan</p>
+      <div class="safety-list">
+        ${safety.warnings
+          .slice(0, compact ? 2 : 4)
+          .map(
+            (warning) => `
+              <div class="safety-item">
+                <strong>${warning.title}</strong>
+                <span>${warning.text}</span>
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderQuickSearches() {
   refs.quickSearchesRoot.innerHTML = QUICK_SEARCHES.map(
     (term) => `<button type="button" data-query="${term}">${term}</button>`
@@ -1396,6 +1605,7 @@ function renderTreatmentPlan() {
                 <h4>${entry.point.name || entry.point.code}</h4>
                 <p class="result-meta">${channelMeta(family).longLabel} · ${entry.point.zoneLabel}</p>
                 <p class="result-text">${entry.point.indication || "-"}</p>
+                ${renderSafetyPanel(entry.point, true)}
                 <div class="match-list">${reasons || "<span class='match-chip'>Browse cepat</span>"}</div>
                 <div class="card-actions">
                   <button type="button" class="ghost-btn" data-point="${entry.point.code}">Buka detail</button>
@@ -1469,6 +1679,8 @@ function renderDetailPanel() {
           </div>
         </section>
       </div>
+
+      ${renderSafetyPanel(point)}
 
       <section class="detail-related">
         <p class="result-label">Titik terkait</p>
@@ -1563,6 +1775,7 @@ function renderResults() {
               <span class="badge">${entry.point.category}</span>
               <span class="badge">${channelBadge(entry.point)}</span>
               <span class="badge">${entry.point.surface === "back" ? "Belakang" : "Depan"}</span>
+              ${renderSafetyBadge(entry.point)}
               ${score !== null ? `<span class="badge score-badge">${score}</span>` : ""}
             </div>
           </div>
@@ -1576,6 +1789,8 @@ function renderResults() {
             <p class="result-label">Lokasi singkat</p>
             <p class="result-text">${entry.point.location || "-"}</p>
           </section>
+
+          ${renderSafetyPanel(entry.point, true)}
 
           ${
             topContributions.length
