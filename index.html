@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>How Do You Feel?</title>
-    <meta name="theme-color" content="#f8f4ec" />
+    <meta name="theme-color" content="#f7f2e8" />
     <meta
       name="description"
       content="How Do You Feel? membantu menjembatani keluhan dengan titik akupuntur, meridian, dan atlas tubuh interaktif."
@@ -25,21 +25,34 @@
     <div class="page-shell">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">How Do You Feel?</p>
+          <div class="brand-row" aria-label="Nama aplikasi">
+            <span class="brand-mark">HYF</span>
+            <span>How Do You Feel?</span>
+          </div>
+          <p class="eyebrow">Acupuncture point finder</p>
           <h1>How do you feel?</h1>
           <p class="hero-text">
-            Tulis keluhan yang kamu rasakan. Web ini membantu menemukan titik akupuntur yang
-            berkaitan, lengkap dengan meridian, area tubuh, dan ringkasan titik prioritas.
+            Ceritakan keluhanmu dengan bahasa sehari-hari. Aplikasi ini akan menyusun titik
+            akupuntur yang paling berkaitan, area tubuhnya, meridiannya, dan peringatan keamanan
+            yang perlu diperhatikan.
           </p>
           <div class="hero-pills" aria-label="Kapabilitas utama">
-            <span>Bahasa sehari-hari</span>
-            <span>Peta tubuh</span>
-            <span>Detail titik</span>
+            <span>Cari dari keluhan</span>
+            <span>Lihat area tubuh</span>
+            <span>Cek keamanan titik</span>
+          </div>
+          <div class="hero-steps" aria-label="Cara menggunakan">
+            <span><strong>1</strong> Tulis keluhan</span>
+            <span><strong>2</strong> Pilih titik</span>
+            <span><strong>3</strong> Baca detail</span>
           </div>
         </div>
 
         <form id="search-form" class="search-panel">
-          <label class="search-label" for="complaint-input">Tell me how you feel</label>
+          <div class="search-heading">
+            <label class="search-label" for="complaint-input">Tell me how you feel</label>
+            <span>contoh: maag + mual + cemas</span>
+          </div>
           <div class="search-row">
             <input
               id="complaint-input"
@@ -52,8 +65,8 @@
             <button type="submit">Cari</button>
           </div>
           <p class="search-note">
-            Bisa tulis satu atau beberapa keluhan sekaligus. Contoh:
-            <span>maag + mual + cemas</span> atau <span>susah tidur + pusing</span>.
+            Bisa satu keluhan atau beberapa sekaligus. Untuk bobot lebih kuat, tulis seperti
+            <span>maag^2 + mual</span>.
           </p>
           <div id="quick-searches" class="quick-searches" aria-label="Contoh query"></div>
           <div class="search-toolbar">
@@ -75,23 +88,23 @@
       <main class="layout">
         <aside class="sidebar">
           <section class="info-card">
-            <h2>Basis Data</h2>
+            <h2>Isi aplikasi</h2>
             <div id="dataset-stats" class="stats-grid"></div>
           </section>
 
           <section class="info-card">
-            <h2>Atlas APK</h2>
+            <h2>Atlas tubuh</h2>
             <div id="atlas-summary"></div>
             <div id="atlas-languages" class="mini-chip-row"></div>
           </section>
 
           <section class="info-card">
-            <h2>Katalog Meridian</h2>
+            <h2>Daftar meridian</h2>
             <div id="meridian-catalog" class="catalog-list"></div>
           </section>
 
           <section class="info-card caution">
-            <h2>Catatan</h2>
+            <h2>Batas aman</h2>
             <p>
               Ini tetap alat bantu referensi, bukan keputusan klinis otomatis. Peta meridian di
               web bersifat skematik, sementara layer atlas dan mesh keluarga meridian diturunkan
@@ -104,11 +117,11 @@
         <section class="results-panel">
           <div class="results-head">
             <div>
-              <p class="eyebrow">Panduan</p>
+              <p class="eyebrow">Hasil & panduan</p>
               <h2 id="results-title">Mulai dari keluhan atau meridian</h2>
             </div>
             <p id="results-summary" class="results-summary">
-              Cari keluhan, atur bobot, filter meridian, lalu buka detail titik.
+              Cari keluhan, lihat prioritas titik, lalu buka detail sebelum mengambil keputusan.
             </p>
           </div>
 

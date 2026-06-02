@@ -664,7 +664,7 @@ function resetExplorer() {
   state.weightOverrides = {};
   renderAll();
   refs.complaintInput.focus();
-  setActionFeedback("Explorer direset ke kondisi awal.");
+  setActionFeedback("Tampilan dikembalikan ke kondisi awal.");
 }
 
 function buildMeridianCatalogData(sourceEntries) {
@@ -1562,19 +1562,19 @@ function renderTreatmentPlan() {
 
   const topEntries = visible.slice(0, 3);
   const title = state.query
-    ? "Rencana cepat"
+    ? "Titik prioritas"
     : state.meridianFilter
-      ? `Tiga titik pembuka ${state.meridianFilter}`
+      ? `Titik awal ${state.meridianFilter}`
       : `Titik sekitar ${activePoint()?.code || ""}`;
   const subtitle = state.query
-    ? "Ambil titik dengan skor tertinggi dulu, lalu dalami detail dan alasan match-nya."
-    : "Ringkasan singkat ini membantu browse cepat sebelum membuka detail tiap titik.";
+    ? "Mulai dari titik dengan kecocokan tertinggi, lalu baca lokasi dan peringatan keamanannya."
+    : "Gunakan daftar singkat ini untuk mengenali titik terdekat sebelum membuka detail.";
 
   refs.treatmentPlanRoot.innerHTML = `
     <article class="detail-card">
       <div class="detail-head">
         <div>
-          <p class="eyebrow">Ringkasan tindakan</p>
+          <p class="eyebrow">Langkah awal</p>
           <h3>${title}</h3>
           <p class="detail-subtitle">${subtitle}</p>
         </div>
@@ -1606,7 +1606,7 @@ function renderTreatmentPlan() {
                 <p class="result-meta">${channelMeta(family).longLabel} · ${entry.point.zoneLabel}</p>
                 <p class="result-text">${entry.point.indication || "-"}</p>
                 ${renderSafetyPanel(entry.point, true)}
-                <div class="match-list">${reasons || "<span class='match-chip'>Browse cepat</span>"}</div>
+                <div class="match-list">${reasons || "<span class='match-chip'>Jelajahi titik</span>"}</div>
                 <div class="card-actions">
                   <button type="button" class="ghost-btn" data-point="${entry.point.code}">Buka detail</button>
                   <button type="button" class="ghost-btn" data-meridian="${family}">Lihat meridian</button>
@@ -1662,7 +1662,7 @@ function renderDetailPanel() {
           <p class="result-text">${point.location || "-"}</p>
         </section>
         <section>
-          <p class="result-label">Fungsi utama</p>
+          <p class="result-label">Biasanya dipakai untuk</p>
           <p class="result-text">${point.indication || "-"}</p>
         </section>
         <section>
@@ -1750,7 +1750,7 @@ function renderResults() {
       "Mode detail tanpa query menampilkan keluarga meridian atau area tubuh yang paling dekat dengan titik aktif.";
   } else if (state.meridianFilter) {
     const meta = channelMeta(state.meridianFilter);
-    refs.resultsTitle.textContent = `Browse ${meta.longLabel}`;
+    refs.resultsTitle.textContent = `Jelajahi ${meta.longLabel}`;
     refs.resultsSummary.textContent = `${visible.length} titik tampil untuk keluarga meridian ini.`;
   }
 
@@ -1781,12 +1781,12 @@ function renderResults() {
           </div>
 
           <section class="result-section">
-            <p class="result-label">Fungsi utama</p>
+            <p class="result-label">Biasanya dipakai untuk</p>
             <p class="result-text">${entry.point.indication || "-"}</p>
           </section>
 
           <section class="result-section">
-            <p class="result-label">Lokasi singkat</p>
+            <p class="result-label">Letak titik</p>
             <p class="result-text">${entry.point.location || "-"}</p>
           </section>
 
@@ -1796,7 +1796,7 @@ function renderResults() {
             topContributions.length
               ? `
                 <section class="result-section">
-                  <p class="result-label">Bobot keluhan yang kena</p>
+                  <p class="result-label">Keluhan yang cocok</p>
                   <div class="match-list">
                     ${topContributions
                       .map(
